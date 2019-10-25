@@ -1,0 +1,11 @@
+numpy
+scipy
+matplotlib
+numba
+pyfftw
+imageio
+opencv-python
+xlsxwriter
+tqdm
+pandas
+xlrd
