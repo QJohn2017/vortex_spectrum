@@ -1,8 +1,6 @@
 from abc import ABCMeta, abstractmethod
-from multiprocessing import cpu_count
-from numpy import exp, conj, zeros, complex64
+from numpy import conj, zeros, complex64
 from numba import jit
-from pyfftw.builders import fft2, ifft2
 
 
 class DiffractionExecutor(metaclass=ABCMeta):

@@ -151,7 +151,7 @@ class Propagator:
 
             # plot beam
             if self.__plot_beam_every and not (n_step % self.__plot_beam_every):
-                self.__logger.measure_time(self.__visualizer.plot_beam, [self.__beam, self.__z, n_step])
+                self.__logger.measure_time(self.__visualizer.plot_pair, [self.__beam, self.__z, n_step])
 
             # check if calculations must be stopped
             if self.__beam.i_max > self.__max_intensity_to_stop:

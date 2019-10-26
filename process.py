@@ -1,4 +1,4 @@
-from core import BeamR, SweepDiffractionExecutorR, KerrExecutorR, Propagator, parse_args
+from core import BeamR, SweepDiffractionExecutorR, KerrExecutorR, Propagator, Visualizer, parse_args
 
 # parse args from command line
 args = parse_args()
@@ -13,10 +13,10 @@ beam = BeamR(medium='LiF',
              n_r=2048)
 
 # create visualizer object
-# visualizer = BeamVisualizer(beam=beam,
-#                             maximum_intensity='local',
-#                             normalize_intensity_to=beam.i_0,
-#                             plot_type='volume')
+visualizer = Visualizer(beam=beam,
+                        maximum_intensity='local',
+                        normalize_intensity_to=beam.i_0,
+                        plot_type='volume')
 
 # create propagator object
 propagator = Propagator(args=args,
@@ -27,9 +27,9 @@ propagator = Propagator(args=args,
                         dz_0=beam.z_diff / 1000,
                         const_dz=True,
                         print_current_state_every=50,
-                        plot_beam_every=0,
-                        max_intensity_to_stop=10**17)
-                        #visualizer=visualizer)
+                        plot_beam_every=50,
+                        max_intensity_to_stop=10**17,
+                        visualizer=visualizer)
 
 # initiate propagation process
 propagator.propagate()

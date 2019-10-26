@@ -29,6 +29,7 @@ class BeamR(Beam3D):
 
         self.update_intensity()
 
+
     @property
     def info(self):
         return 'beam_r'
@@ -81,3 +82,4 @@ class BeamR(Beam3D):
             arr[i] = (r / r_0)**M * exp(-0.5 * (r / r_0)**2)
 
         return arr
+

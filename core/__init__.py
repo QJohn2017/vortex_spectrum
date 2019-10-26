@@ -9,3 +9,4 @@ from .m_constants import MathConstants
 from .manager import Manager
 from .medium import Medium
 from .propagation import Propagator
+from .visualization import Visualizer

@@ -40,19 +40,6 @@ class KerrExecutor(metaclass=ABCMeta):
                                                   self.__nonlin_phase_const * dz)
 
 
-class KerrExecutorX(KerrExecutor):
-    """
-    Class for modeling the Kerr effect to which a 2-dimensional beam is exposed
-    """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    @property
-    def info(self):
-        return 'kerr_executor_x'
-
-
 class KerrExecutorR(KerrExecutor):
     """
     Class for modeling the Kerr effect to which a 3-dimensional beam in axisymmetric approximation is exposed
@@ -64,16 +51,3 @@ class KerrExecutorR(KerrExecutor):
     @property
     def info(self):
         return 'kerr_executor_r'
-
-
-class KerrExecutorXY(KerrExecutor):
-    """
-    Class for modeling the Kerr effect to which a 3-dimensional beam is exposed
-    """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    @property
-    def info(self):
-        return 'kerr_executor_xy'
