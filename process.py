@@ -10,13 +10,14 @@ beam = BeamR(medium='LiF',
              M=1,
              lmbda=1800*10**-9,
              r_0=100*10**-6,
+             radii_in_grid=50,
              n_r=2048)
 
 # create visualizer object
 visualizer = Visualizer(beam=beam,
                         maximum_intensity='local',
-                        normalize_intensity_to=beam.i_0,
-                        plot_type='volume')
+                        remaining_central_part_coeff=0.1,
+                        normalize_intensity_to=beam.i_0)
 
 # create propagator object
 propagator = Propagator(args=args,

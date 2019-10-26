@@ -3,7 +3,7 @@ from .functions import calc_ticks_x, crop_x, linear_approximation_complex, linea
     calculate_p_gauss, calculate_p_vortex, parse_args, load_dirnames
 from .beam import BeamR
 from .diffraction import SweepDiffractionExecutorR
-from .kerr_effect import KerrExecutorX, KerrExecutorR, KerrExecutorXY
+from .kerr_effect import KerrExecutorR
 from .logger import Logger
 from .m_constants import MathConstants
 from .manager import Manager

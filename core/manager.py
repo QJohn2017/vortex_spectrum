@@ -26,7 +26,7 @@ class Manager:
 
         # other directories paths
         self.__track_dir = self.results_dir + '/track'
-        self.__beam_dir = self.results_dir + '/beam'
+        self.__beam_dir = self.results_dir + '/beam_and_spectrum'
 
     @property
     def results_dir(self):

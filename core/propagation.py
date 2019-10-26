@@ -1,7 +1,6 @@
 from numpy import zeros
 from numba import jit
 
-from .visualization import plot_track
 from .logger import Logger
 from .manager import Manager
 
@@ -164,8 +163,8 @@ class Propagator:
         # print track
         if self.__flag_print_track:
             parameter_index = self.__states_columns.index('i_max / i_0')
-            self.__logger.measure_time(plot_track, [self.__states_arr, parameter_index,
-                                                    self.__manager.track_dir])
+            self.__logger.measure_time(self.__visualizer.plot_track, [self.__states_arr, parameter_index,
+                                                                      self.__manager.track_dir])
 
         # log time of all functions
         self.__logger.log_times()

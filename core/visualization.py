@@ -5,20 +5,23 @@ from mpl_toolkits.mplot3d import Axes3D
 from pylab import contourf
 
 from .functions import r_to_xy_real, crop_x, calc_ticks_x
+from .spectrum import Spectrum
 
 
 class Visualizer:
     def __init__(self, **kwargs):
         self.__beam = kwargs['beam']
         self.__maximum_intensity = kwargs['maximum_intensity']
+        self.__remaining_central_part_coeff = kwargs['remaining_central_part_coeff']
         self.__language = kwargs.get('language', 'english')
         self._path_to_save = None
+
+        self.__spectrum_obj = Spectrum(beam=self.__beam)
 
     def get_path_to_save(self, path_to_save):
         self._path_to_save = path_to_save
 
-    @staticmethod
-    def __crop_arr(arr, remaining_central_part_coeff):
+    def __crop_arr(self, arr):
         """
         :param remaining_central_part_coeff:
         0 -> no points,
@@ -27,16 +30,19 @@ class Visualizer:
         :return:
         """
 
-        if remaining_central_part_coeff < 0 or remaining_central_part_coeff > 1:
+        if self.__remaining_central_part_coeff < 0 or self.__remaining_central_part_coeff > 1:
             raise Exception('Wrong remaining_central part_coeff!')
 
         N = arr.shape[0]
-        delta = int(remaining_central_part_coeff / 2 * N)
+        delta = int(self.__remaining_central_part_coeff / 2 * N)
         i_min, i_max = N // 2 - delta, N // 2 + delta
 
         return arr[i_min:i_max, i_min:i_max]
 
     def plot_pair(self, beam, z, step):
+        self.__spectrum_obj.update_intensity()
+        self.__spectrum_obj.update_spectrum()
+
         fig = plt.figure(figsize=(15, 10), constrained_layout=True)
         spec = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
         ax1 = fig.add_subplot(spec[0, 0])
@@ -48,15 +54,11 @@ class Visualizer:
         ax1.set_title('$\mathbf{I(x, y)}$')
         ax2.set_title('$\mathbf{S(k_x, k_y)}$')
 
-        intensity_xy = r_to_xy_real(self.__beam.intensity)
+        arr_for_plot = self.__crop_arr(self.__spectrum_obj.intensity_xy)
+        spectrum_for_plot = self.__crop_arr(self.__spectrum_obj.spectrum_intensity)
 
-        arr_for_plot = self.__crop_arr(intensity_xy, 0.2)
-        spectrum_for_plot = self.__crop_arr(intensity_xy, 0.2)
-
-        xy_cmap = plt.get_cmap('jet')
-
-        ax1.contourf(arr_for_plot, cmap=xy_cmap, levels=100)
-        ax2.contourf(spectrum_for_plot, cmap=xy_cmap, levels=100)
+        ax1.contourf(arr_for_plot, cmap=plt.get_cmap('jet'), levels=100)
+        ax2.contourf(spectrum_for_plot, cmap=plt.get_cmap('gray'), levels=100)
 
         dpi = 50
 
@@ -64,8 +66,7 @@ class Visualizer:
         plt.savefig('fft_vortex.png', bbox_inches='tight')
         plt.close()
 
-
-    def plot_track(states_arr, parameter_index, path):
+    def plot_track(self, states_arr, parameter_index, path):
         """Plots parameter dependence on evolutionary coordinate z"""
 
         zs = [e * 10 ** 2 for e in states_arr[:, 0]]
