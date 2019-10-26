@@ -1,19 +1,13 @@
-from numpy import transpose, meshgrid, zeros
-from matplotlib import pyplot as plt, cm
+from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
-from mpl_toolkits.mplot3d import Axes3D
-from pylab import contourf
 
-from .functions import r_to_xy_real, crop_x, calc_ticks_x
 from .spectrum import Spectrum
 
 
 class Visualizer:
     def __init__(self, **kwargs):
         self.__beam = kwargs['beam']
-        self.__maximum_intensity = kwargs['maximum_intensity']
         self.__remaining_central_part_coeff = kwargs['remaining_central_part_coeff']
-        self.__language = kwargs.get('language', 'english')
         self._path_to_save = None
 
         self.__spectrum_obj = Spectrum(beam=self.__beam)
@@ -51,8 +45,8 @@ class Visualizer:
         ax1.set_aspect('equal')
         ax2.set_aspect('equal')
 
-        ax1.set_title('$\mathbf{I(x, y)}$')
-        ax2.set_title('$\mathbf{S(k_x, k_y)}$')
+        ax1.set_title('$\mathbf{I(x, y)}$', fontdict={'fontsize': 30})
+        ax2.set_title('$\mathbf{S(k_x, k_y)}$', fontdict={'fontsize': 30})
 
         arr_for_plot = self.__crop_arr(self.__spectrum_obj.intensity_xy)
         spectrum_for_plot = self.__crop_arr(self.__spectrum_obj.spectrum_intensity)
@@ -60,9 +54,10 @@ class Visualizer:
         ax1.contourf(arr_for_plot, cmap=plt.get_cmap('jet'), levels=100)
         ax2.contourf(spectrum_for_plot, cmap=plt.get_cmap('gray'), levels=100)
 
-        dpi = 50
+        ax1.set_axis_off()
+        ax2.set_axis_off()
 
-        plt.savefig(self._path_to_save + '/%04d.png' % step, bbox_inches='tight', dpi=dpi)
+        plt.savefig(self._path_to_save + '/%04d.png' % step, bbox_inches='tight', dpi=50)
         plt.savefig('fft_vortex.png', bbox_inches='tight')
         plt.close()
 

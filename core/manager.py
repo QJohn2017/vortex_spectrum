@@ -19,18 +19,30 @@ class Manager:
 
         # global_results_dir = global_root_dir/global_results_dir_name
         # results_dir = global_results_dir/<something with prefix and may be datetime>
-        self.__global_results_dir, self.__results_dir, _ = make_paths(self.__global_root_dir,
-                                                                      self.__global_results_dir_name,
-                                                                      self.__prefix,
-                                                                      insert_datetime=self.__insert_datetime)
+        self.__global_results_dir, self.__results_dir, self.__results_dir_name = \
+            make_paths(self.__global_root_dir,
+                       self.__global_results_dir_name,
+                       self.__prefix,
+                       insert_datetime=self.__insert_datetime)
 
         # other directories paths
-        self.__track_dir = self.results_dir + '/track'
-        self.__beam_dir = self.results_dir + '/beam_and_spectrum'
+        self.__track_dir_name = 'track'
+        self.__track_dir = self.results_dir + '/' + self.__track_dir_name
+
+        self.__beam_dir_name = 'beam_and_spectrum'
+        self.__beam_dir = self.results_dir + '/' + self.__beam_dir_name
+
+    @property
+    def beam_dir_name(self):
+        return self.__beam_dir_name
 
     @property
     def results_dir(self):
         return self.__results_dir
+
+    @property
+    def results_dir_name(self):
+        return self.__results_dir_name
 
     @staticmethod
     def create_dir(path):

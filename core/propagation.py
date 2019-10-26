@@ -1,8 +1,10 @@
 from numpy import zeros
 from numba import jit
+from datetime import datetime
 
 from .logger import Logger
 from .manager import Manager
+from .functions import make_animation, make_video
 
 
 class Propagator:
@@ -165,6 +167,9 @@ class Propagator:
             parameter_index = self.__states_columns.index('i_max / i_0')
             self.__logger.measure_time(self.__visualizer.plot_track, [self.__states_arr, parameter_index,
                                                                       self.__manager.track_dir])
+
+        make_animation(self.__manager.results_dir, self.__manager.beam_dir_name, self.__manager.beam_dir_name)
+        make_video(self.__manager.results_dir, self.__manager.beam_dir_name, self.__manager.beam_dir_name)
 
         # log time of all functions
         self.__logger.log_times()
