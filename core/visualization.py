@@ -34,28 +34,33 @@ class Visualizer:
         return arr[i_min:i_max, i_min:i_max]
 
     def plot_pair(self, beam, z, step):
-        self.__spectrum_obj.update_intensity()
-        self.__spectrum_obj.update_spectrum()
+        self.__spectrum_obj.update_data()
 
         fig = plt.figure(figsize=(15, 10), constrained_layout=True)
-        spec = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
+        spec = gridspec.GridSpec(ncols=3, nrows=1, figure=fig)
         ax1 = fig.add_subplot(spec[0, 0])
         ax2 = fig.add_subplot(spec[0, 1])
+        ax3 = fig.add_subplot(spec[0, 2])
 
         ax1.set_aspect('equal')
         ax2.set_aspect('equal')
+        ax3.set_aspect('equal')
 
         ax1.set_title('$\mathbf{I(x, y)}$', fontdict={'fontsize': 30})
-        ax2.set_title('$\mathbf{S(k_x, k_y)}$', fontdict={'fontsize': 30})
+        ax2.set_title('$\mathbf{\\varphi(x, y)}$', fontdict={'fontsize': 30})
+        ax3.set_title('$\mathbf{S(k_x, k_y)}$', fontdict={'fontsize': 30})
 
-        arr_for_plot = self.__crop_arr(self.__spectrum_obj.intensity_xy)
+        intensity_for_plot = self.__crop_arr(self.__spectrum_obj.intensity_xy)
+        phase_for_plot = self.__crop_arr(self.__spectrum_obj.phase_xy)
         spectrum_for_plot = self.__crop_arr(self.__spectrum_obj.spectrum_intensity)
 
-        ax1.contourf(arr_for_plot, cmap=plt.get_cmap('jet'), levels=100)
-        ax2.contourf(spectrum_for_plot, cmap=plt.get_cmap('gray'), levels=100)
+        ax1.contourf(intensity_for_plot, cmap=plt.get_cmap('jet'), levels=100)
+        ax2.contourf(phase_for_plot, cmap=plt.get_cmap('hot'), levels=100)
+        ax3.contourf(spectrum_for_plot, cmap=plt.get_cmap('gray'), levels=100)
 
         ax1.set_axis_off()
         ax2.set_axis_off()
+        ax3.set_axis_off()
 
         plt.savefig(self._path_to_save + '/%04d.png' % step, bbox_inches='tight', dpi=50)
         plt.savefig('fft_vortex.png', bbox_inches='tight')

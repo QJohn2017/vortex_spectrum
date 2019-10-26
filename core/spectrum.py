@@ -1,4 +1,4 @@
-from numpy import zeros, float64, complex64, exp, arctan2, pi
+from numpy import zeros, float64, complex64, exp, arctan2, pi, angle
 from numpy.fft import fft2, fftshift
 from numba import jit
 
@@ -9,6 +9,7 @@ class Spectrum:
     def __init__(self, **kwargs):
         self.__beam = kwargs['beam']
         self.__intensity_xy = zeros((2 * self.__beam.n_r, 2 * self.__beam.n_r), dtype=float64)
+        self.__phase_xy = zeros((2 * self.__beam.n_r, 2 * self.__beam.n_r), dtype=float64)
 
         self.__spectrum = zeros((2 * self.__beam.n_r, 2 * self.__beam.n_r), dtype=complex64)
         self.__spectrum_intensity = zeros((2 * self.__beam.n_r, 2 * self.__beam.n_r), dtype=complex64)
@@ -21,6 +22,10 @@ class Spectrum:
     @property
     def intensity_xy(self):
         return self.__intensity_xy
+
+    @property
+    def phase_xy(self):
+        return self.__phase_xy
 
     @property
     def spectrum_intensity(self):
@@ -41,13 +46,17 @@ class Spectrum:
 
         return vortex_phase
 
-    def update_intensity(self):
+    def update_data(self):
+        # intensity
         self.__intensity_xy = r_to_xy_real(self.__beam._intensity)
 
-    def update_spectrum(self):
         field_xy = r_to_xy_complex(self.__beam._field)
         field_xy *= self.__vortex_phase
 
+        # phase
+        self.__phase_xy = angle(field_xy)
+
+        # spectrum
         self.__make_fft(field_xy)
         self.__spectrum_intensity = self.__beam._field_to_intensity(self.__spectrum)
 

@@ -11,7 +11,7 @@ beam = BeamR(medium='LiF',
              lmbda=1800*10**-9,
              r_0=100*10**-6,
              radii_in_grid=70,
-             n_r=2048)
+             n_r=4096)
 
 # create visualizer object
 visualizer = Visualizer(beam=beam,
@@ -26,7 +26,7 @@ propagator = Propagator(args=args,
                         dz_0=beam.z_diff / 1000,
                         const_dz=True,
                         print_current_state_every=50,
-                        plot_beam_every=1,
+                        plot_beam_every=50,
                         max_intensity_to_stop=10**17,
                         visualizer=visualizer)
 
