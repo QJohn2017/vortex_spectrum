@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
-from numpy import conj, zeros, complex64
+from multiprocessing import cpu_count
+from numpy import exp, conj, zeros, complex64, array
 from numba import jit
+from pyfftw.builders import fft2, ifft2
 
 
 class DiffractionExecutor(metaclass=ABCMeta):
@@ -102,3 +104,72 @@ class SweepDiffractionExecutorR(DiffractionExecutor):
                                                 self.__xi, self.__eta, self.__vx, self.__kappa_left, self.__mu_left,
                                                 self.__kappa_right, self.__mu_right)
 
+
+class FourierDiffractionExecutorXY(DiffractionExecutor):
+    """
+    Class for modeling the diffraction of a 3-dimensional beam using fast Fourier transform in pyfftw.
+    """
+
+    MAX_NUMBER_OF_CPUS = cpu_count()  # number of threads for parallelization
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @property
+    def info(self):
+        return 'fourier_diffraction_executor_xy'
+
+    @staticmethod
+    @jit(nopython=True)
+    def __phase_increment(field_fft, n_x, n_y, k_xs, k_ys, current_lin_phase):
+        """
+        :param field_fft: spatial spectrum of the field array
+        :param n_x: number of points in spatial grid along x
+        :param n_y: number of points in spatial grid along y
+        :param k_xs: wave vector grid nosed along x
+        :param k_ys: wave vector grid nosed along y
+        :param current_lin_phase: linear phase shift in spectral space
+
+        :return: spatial spectrum of the field array with linear phase shift along both axes
+        """
+        for i in range(n_x):
+            field_fft[i, :] *= exp(current_lin_phase * k_xs[i] ** 2)
+
+        for j in range(n_y):
+            field_fft[:, j] *= exp(current_lin_phase * k_ys[j] ** 2)
+
+        #field_fft *= exp(current_lin_phase * (k_xs**2 + k_ys**2))
+        #
+        # for i in range(n_x):
+        #     for j in range(n_y):
+        #         field_fft[i, j] *= exp(current_lin_phase * k_xs[i] ** 2)
+        #
+        # for j in range(n_y):
+        #     for i in range(n_x):
+        #         field_fft[i, j] *= exp(current_lin_phase * k_ys[j] ** 2)
+
+        return field_fft
+
+    def process_diffraction(self, dz, n_jobs=MAX_NUMBER_OF_CPUS):
+        """
+        :param dz: current step along evolutionary coordinate z
+        :param n_jobs: number of threads for parallelization
+
+        :return: None
+        """
+
+        # calculation of current linear phase shift
+        current_lin_phase = 0.5j * dz / self._beam.medium.k_0
+
+        # forward parallel fast Fourier transform
+        fft_obj = fft2(self._beam._field, threads=n_jobs)
+
+        # linear phase increment
+        field_fft = self.__phase_increment(fft_obj(), self._beam.n_x, self._beam.n_y, array(self._beam.k_xs),
+                                           array(self._beam.k_ys), current_lin_phase)
+
+        # backward parallel fast Fourier transform
+        ifft_obj = ifft2(field_fft, threads=n_jobs)
+
+        # field initialization with updated values
+        self._beam._field = ifft_obj()

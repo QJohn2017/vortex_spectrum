@@ -2,10 +2,10 @@ from numpy import zeros, float64, complex64, exp, arctan2, pi, angle
 from numpy.fft import fft2, fftshift
 from numba import jit
 
-from .functions import r_to_xy_real, r_to_xy_complex
+from core.functions import r_to_xy_real, r_to_xy_complex
 
 
-class Spectrum:
+class SpectrumR:
     def __init__(self, **kwargs):
         self.__beam = kwargs['beam']
         self.__intensity_xy = zeros((2 * self.__beam.n_r, 2 * self.__beam.n_r), dtype=float64)

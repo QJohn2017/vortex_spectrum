@@ -51,3 +51,16 @@ class KerrExecutorR(KerrExecutor):
     @property
     def info(self):
         return 'kerr_executor_r'
+
+
+class KerrExecutorXY(KerrExecutor):
+    """
+    Class for modeling the Kerr effect to which a 3-dimensional beam is exposed
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @property
+    def info(self):
+        return 'kerr_executor_xy'

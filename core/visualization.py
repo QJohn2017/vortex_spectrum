@@ -1,21 +1,25 @@
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
+from numpy import max as maximum, log10, angle, arctan2
+import numpy as np
 
-from .spectrum import Spectrum
+from core.spectrum import SpectrumR, SpectrumXY
 
 
-class Visualizer:
+class BaseVisualizer:
     def __init__(self, **kwargs):
-        self.__beam = kwargs['beam']
-        self.__remaining_central_part_coeff = kwargs['remaining_central_part_coeff']
+        self._beam = kwargs['beam']
+        self._remaining_central_part_coeff_field = kwargs['remaining_central_part_coeff_field']
+        self._remaining_central_part_coeff_spectrum = kwargs['remaining_central_part_coeff_spectrum']
+
         self._path_to_save = None
 
-        self.__spectrum_obj = Spectrum(beam=self.__beam)
+        self._spectrum_obj = None
 
     def get_path_to_save(self, path_to_save):
         self._path_to_save = path_to_save
 
-    def __crop_arr(self, arr):
+    def _crop_arr_field(self, arr):
         """
         :param remaining_central_part_coeff:
         0 -> no points,
@@ -24,17 +28,40 @@ class Visualizer:
         :return:
         """
 
-        if self.__remaining_central_part_coeff < 0 or self.__remaining_central_part_coeff > 1:
+        if self._remaining_central_part_coeff_field < 0 or self._remaining_central_part_coeff_field > 1:
             raise Exception('Wrong remaining_central part_coeff!')
 
         N = arr.shape[0]
-        delta = int(self.__remaining_central_part_coeff / 2 * N)
+        delta = int(self._remaining_central_part_coeff_field / 2 * N)
         i_min, i_max = N // 2 - delta, N // 2 + delta
 
         return arr[i_min:i_max, i_min:i_max]
 
+    def _crop_arr_spectrum(self, arr):
+        """
+        :param remaining_central_part_coeff:
+        0 -> no points,
+        0.5 -> central half number of points,
+        1.0 -> all points
+        :return:
+        """
+
+        if self._remaining_central_part_coeff_spectrum < 0 or self._remaining_central_part_coeff_spectrum > 1:
+            raise Exception('Wrong remaining_central part_coeff!')
+
+        N = arr.shape[0]
+        delta = int(self._remaining_central_part_coeff_spectrum / 2 * N)
+        i_min, i_max = N // 2 - delta, N // 2 + delta
+
+        return arr[i_min:i_max, i_min:i_max]
+
+    @staticmethod
+    def __log_arr(arr):
+        MAX = maximum(arr)
+        return log10(arr / MAX)
+
     def plot_pair(self, beam, z, step):
-        self.__spectrum_obj.update_data()
+        self._spectrum_obj.update_data()
 
         fig = plt.figure(figsize=(15, 10), constrained_layout=True)
         spec = gridspec.GridSpec(ncols=3, nrows=1, figure=fig)
@@ -50,11 +77,13 @@ class Visualizer:
         ax2.set_title('$\mathbf{\\varphi(x, y)}$', fontdict={'fontsize': 30})
         ax3.set_title('$\mathbf{S(k_x, k_y)}$', fontdict={'fontsize': 30})
 
-        intensity_for_plot = self.__crop_arr(self.__spectrum_obj.intensity_xy)
-        phase_for_plot = self.__crop_arr(self.__spectrum_obj.phase_xy)
-        spectrum_for_plot = self.__crop_arr(self.__spectrum_obj.spectrum_intensity)
+        intensity_for_plot = self._crop_arr_field(self._spectrum_obj.intensity_xy)
+        phase_for_plot = self._crop_arr_field(self._spectrum_obj.phase_xy)
+        spectrum_for_plot = self._crop_arr_spectrum(self._spectrum_obj.spectrum_intensity)
 
         ax1.contourf(intensity_for_plot, cmap=plt.get_cmap('jet'), levels=100)
+        print('max =', np.max(phase_for_plot))
+        print('min =', np.min(phase_for_plot))
         ax2.contourf(phase_for_plot, cmap=plt.get_cmap('hot'), levels=100)
         ax3.contourf(spectrum_for_plot, cmap=plt.get_cmap('gray'), levels=100)
 
@@ -87,6 +116,19 @@ class Visualizer:
         plt.savefig(path + '/i_max(z).png', bbox_inches='tight')
         plt.close()
 
+
+class VisualizerR(BaseVisualizer):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self._spectrum_obj = SpectrumR(beam=self._beam)
+
+
+class VisualizerXY(BaseVisualizer):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self._spectrum_obj = SpectrumXY(beam=self._beam)
 
 # class BeamVisualizer:
 #     """Class for plotting beams in profile, flat and volume styles."""
