@@ -6,8 +6,8 @@ args = parse_args()
 # create object of 3D axisymmetric beam
 beam = BeamR(medium='LiF',
              p_0_to_p_vortex=5,
-             m=3,
-             M=3,
+             m=1,
+             M=1,
              lmbda=1800*10**-9,
              r_0=100*10**-6,
              radii_in_grid=70,
@@ -15,7 +15,8 @@ beam = BeamR(medium='LiF',
 
 # create visualizer object
 visualizer = VisualizerR(beam=beam,
-                         remaining_central_part_coeff=0.05)
+                         remaining_central_part_coeff_field=0.05,
+                         remaining_central_part_coeff_spectrum=0.05)
 
 # create propagator object
 propagator = Propagator(args=args,
@@ -26,8 +27,8 @@ propagator = Propagator(args=args,
                         dz_0=beam.z_diff / 1000,
                         const_dz=True,
                         print_current_state_every=1,
-                        plot_beam_every=25,
-                        max_intensity_to_stop=10**18,
+                        plot_beam_every=5,
+                        max_intensity_to_stop=5 * 10**17,
                         visualizer=visualizer)
 
 # initiate propagation process

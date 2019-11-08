@@ -9,6 +9,7 @@ class SpectrumR:
     def __init__(self, **kwargs):
         self.__beam = kwargs['beam']
         self.__intensity_xy = zeros((2 * self.__beam.n_r, 2 * self.__beam.n_r), dtype=float64)
+        self.__kerr_phase_xy = zeros((2 * self.__beam.n_r, 2 * self.__beam.n_r), dtype=float64)
         self.__phase_xy = zeros((2 * self.__beam.n_r, 2 * self.__beam.n_r), dtype=float64)
 
         self.__spectrum = zeros((2 * self.__beam.n_r, 2 * self.__beam.n_r), dtype=complex64)
@@ -22,6 +23,10 @@ class SpectrumR:
     @property
     def intensity_xy(self):
         return self.__intensity_xy
+
+    @property
+    def kerr_phase_xy(self):
+        return self.__kerr_phase_xy
 
     @property
     def phase_xy(self):
@@ -50,10 +55,14 @@ class SpectrumR:
         # intensity
         self.__intensity_xy = r_to_xy_real(self.__beam._intensity)
 
+        # field
         field_xy = r_to_xy_complex(self.__beam._field)
-        field_xy *= self.__vortex_phase
 
-        # phase
+        # kerr phase
+        self.__kerr_phase_xy = angle(field_xy)
+
+        # full phase
+        field_xy *= self.__vortex_phase
         self.__phase_xy = angle(field_xy)
 
         # spectrum
