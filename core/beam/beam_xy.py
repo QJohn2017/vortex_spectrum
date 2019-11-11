@@ -190,12 +190,12 @@ class BeamXY(Beam3D):
                 #r_02 = 10 * 10 ** -6
                 r_d1 = 10 * 10**-6
                 r_d2 = 50 * 10 ** -6
-                arr[i, j] = exp(-0.5 * ((r - x_0)**2) / r_d1**2) #+ 0.2 * exp(-0.5 * ((r - y_0)**2) / r_d2**2)
+                arr[i, j] = exp(-0.5 * ((r - x_0)**2) / r_d1**2) + 0.19 * exp(-0.5 * ((r - y_0)**2) / r_d2**2)
 
-                #if r < x_0 + 0.5 * (y_0 - x_0):
-                arr[i, j] *= exp(1j * m * (arctan2(x, y)))
-                # else:
-                #     arr[i, j] *= exp(1j * m * (arctan2(x, y) + pi / m))
+                if r < x_0 + 0.5 * (y_0 - x_0):
+                    arr[i, j] *= exp(1j * m * (arctan2(x, y)))
+                else:
+                    arr[i, j] *= exp(1j * m * (arctan2(x, y) + pi / m))
 
                 #arr[i, j] = exp(-0.5 * ((abs(x - r_0) / r_d) ** 2 + (abs(y - r_0) / r_d) ** 2)) *\
 

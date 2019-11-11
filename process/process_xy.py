@@ -10,16 +10,16 @@ beam = BeamXY(medium='LiF',
               M=1,
               lmbda=1800*10**-9,
               x_0=100*10**-6,
-              y_0=200*10**-6,
-              radii_in_grid=8,  # 70 # 140 # 170
+              y_0=300*10**-6,
+              radii_in_grid=70,  # 70 # 140 # 170 #8
               noise_percent=0.0,
               n_x=4096,  # 8k
               n_y=4096)
 
 # create visualizer object
 visualizer = VisualizerXY(beam=beam,
-                          remaining_central_part_coeff_field=0.3,  # 0.04# 0.07 # 0.03
-                          remaining_central_part_coeff_spectrum=0.01)  # 0.08 # 0.015 # 0.03
+                          remaining_central_part_coeff_field=0.05, #0.3,  # 0.04# 0.07 # 0.03
+                          remaining_central_part_coeff_spectrum=0.05) #0.03)  # 0.08 # 0.015 # 0.03
 
 # create propagator object
 propagator = Propagator(args=args,
